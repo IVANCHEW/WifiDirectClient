@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 //Preview class used to start the camera preview
 public class Preview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback{
@@ -28,6 +29,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
     int hexColor;
     double[] labColor2= new double[3];
     double[] labColor1= new double[3];
+    List<int[]> fpsList;
 
     //Prepare handler to send message
     private Handler previewHandler=null;
@@ -53,10 +55,11 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
     public void surfaceCreated(SurfaceHolder holder) {
 
         try{
+            Log.d("NEUTRAL","Surface Created");
             mCamera.setPreviewDisplay(mHolder);
             mCamera.setPreviewCallback(this);
         }catch(Exception e) {
-            Log.d("NEUTRAL", "Error setting holder");
+            Log.d("NEUTRAL", "Error setting holder: " + e.getMessage());
         }
 
     }
@@ -68,6 +71,10 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         param = mCamera.getParameters();
         previewSize = getSmallestPreviewSize(width,height);
         param.setPreviewSize(previewSize.width,previewSize.height);
+        //param.setPreviewSize(640,480);
+
+        //getFPS();
+        param.setPreviewFpsRange(7000,12000);
         //Constant for NV21 format is 17
         param.setPreviewFormat(17);
 
@@ -87,6 +94,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         try {
+            Log.d("NEUTRAL","Surface Destroyed");
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -133,6 +141,21 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         return result;
     }
 
+    private void getFPS(){
+        try{
+            fpsList=param.getSupportedPreviewFpsRange();
+            int x1 = 0;
+            for (int[] x: fpsList) {
+                int[] y = fpsList.get(x1);
+                x1 = x1 + 1;
+                Log.d("NEUTRAL", "FPS List: " + y[0] + "," + y[1]);
+            }
+        }catch(Exception e){
+            Log.d("NEUTRAL","Error in getting FPS: " + e.getMessage());
+        }
+
+    }
+
     public void sendColor(int data, double[] getLAB){
 
         hexColor = data;
@@ -146,7 +169,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         //count = count + 1;
-        //Log.d("NEUTRAL", "Frame received" + count);
+        //Log.d("NEUTRAL", "Frame received");
 
         Camera.Parameters parameters = camera.getParameters();
         int width = parameters.getPreviewSize().width;
@@ -164,6 +187,11 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         msg.obj =bytes;
         msg.setTarget(previewHandler);
         msg.sendToTarget();
+    }
+
+    public void resumePreview(Camera camera){
+        Log.d("NEUTRAL","Preview Class: Resume Preview Called");
+        mCamera=camera;
     }
 
     void findTarget(int[] pixels, byte[] yuv420sp, int width, int height) {

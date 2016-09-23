@@ -80,7 +80,12 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         />
-
+    <ImageView
+        android:layout_width="176dp"
+        android:layout_height="144dp"
+        android:id="@+id/imageView"
+        android:layout_toLeftOf="@id/previewFrame"
+        android:layout_alignParentTop="true"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

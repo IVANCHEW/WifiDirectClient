@@ -70,6 +70,9 @@ public class ClientService extends IntentService {
                 os.close();
 
                 clientSocket.close();
+
+                clientResult.send(port,null);
+
             }catch (IOException e){
                 //signalActivity(e.getMessage());
                 Log.d("NEUTRAL","Error: " + e.getMessage());
@@ -81,8 +84,6 @@ public class ClientService extends IntentService {
             signalActivity("Target device is a group owner");
             //Log.d("NEUTRAL","Target device is a group owner");
         }
-
-        clientResult.send(port,null);
         //Log.d("NEUTRAL","Sent Client Result");
     }
 

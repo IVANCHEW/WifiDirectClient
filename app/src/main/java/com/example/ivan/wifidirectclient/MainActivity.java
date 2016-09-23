@@ -6,6 +6,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
@@ -23,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -63,6 +66,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     String previewState = "OFF";
     public byte[] pictureData;
 
+    ImageView imageView;
+    Bitmap bmpout;
+    int count;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,13 +94,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         frame1= (FrameLayout)findViewById(R.id.previewFrame);
         editText1 = (EditText)findViewById(R.id.editText);
 
-        //====================================INITIATE THE CAMERA=================================
+        imageView = (ImageView)findViewById(R.id.imageView);
 
-        try{
-            mainCamera= Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-        }catch(Exception e){
-            Log.d("NEUTRAL","Error opening camera: " + e.getMessage());
-        }
+        //====================================INITIATE THE CAMERA=================================
+        openCamera();
 
         mPreview = new Preview(this, mainCamera);
 
@@ -189,7 +193,9 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             @Override
             public void onClick(View v) {
                 if (previewState=="ON"){
-                    mainCamera.stopPreview();
+                    frame1.removeAllViews();
+                    releaseCamera();
+
                     previewState="PAUSE";
                     text1.setText("Preview Paused");
                     activeTransfer=false;
@@ -214,9 +220,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 }
                 else if(previewState=="PAUSE"){
                     try{
-                        mainCamera.startPreview();
+                        openCamera();
+                        mPreview.resumePreview(mainCamera);
+                        frame1.addView(mPreview);
                         previewState="ON";
                         text1.setText("Preview Resumed");
+                        activeTransfer=false;
                     }catch(RuntimeException e){
                         Log.d("NEUTRAL","Main Activity: Error in resuming preview");
                         System.err.println(e);
@@ -238,6 +247,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     protected void onPause(){
         super.onPause();
         unregisterReceiver(mReceiver);
+        releaseCamera();
     }
 
     @Override
@@ -265,6 +275,9 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     public void sendData(){
 
         if(activeTransfer==false){
+
+            activeTransfer = true;
+
             if(!transferReadyState){
                 Log.d("NEUTRAL","Error - Connection not ready");
                 text1.setText("Error - Connection not ready");
@@ -275,7 +288,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             else
             {
                 //Launch Client Service
-                Log.d("NEUTRAL","Data Sent");
+                //Log.d("NEUTRAL","Data Sent");
                 clientServiceIntent = new Intent(this, ClientService.class);
                 clientServiceIntent.putExtra("port",new Integer(port));
                 clientServiceIntent.putExtra("wifiInfo",wifiP2pInfo);
@@ -301,14 +314,45 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                         }
                     }
                 });
-                activeTransfer = true;
                 this.startService(clientServiceIntent);
             }
         }else
         {
             Log.d("NEUTRAL","Cannot Send Data");
         }
+
+
+        //TEST IF DATA TRANSMITTED IS CORRECT - NO FLICKERS
+        /*count = pictureData.length;
+        Log.d("NEUTRAL","Send Data Called");
+
+        imageView.post(new Runnable() {
+            @Override
+            public void run() {
+                if (count>1500){
+                    //Log.d("NEUTRAL","Count Value: " + count);
+                    bmpout = BitmapFactory.decodeByteArray(pictureData, 0, pictureData.length);
+                    imageView.setImageBitmap(bmpout);
+                }
+            }
+        });*/
+
+
     }
 
+    public void openCamera(){
+        try{
+            mainCamera= Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+        }catch(Exception e){
+            Log.d("NEUTRAL","Error opening camera: " + e.getMessage());
+        }
+    }
+
+    public void releaseCamera(){
+        if(mainCamera!=null){
+            mainCamera.release();
+            mainCamera=null;
+        }
+    }
 
 }
