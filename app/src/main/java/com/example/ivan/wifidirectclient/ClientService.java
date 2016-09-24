@@ -53,20 +53,19 @@ public class ClientService extends IntentService {
             try{
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
-                PrintWriter pw = new PrintWriter(os);
+                //PrintWriter pw = new PrintWriter(os);
 
-                InputStream is = clientSocket.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is);
-                BufferedReader br = new BufferedReader(isr);
+                //InputStream is = clientSocket.getInputStream();
+                //InputStreamReader isr = new InputStreamReader(is);
+                //BufferedReader br = new BufferedReader(isr);
 
                //Send Data
                 os.write(pictureData,0,pictureData.length);
                 os.flush();
-                br.close();
-                isr.close();
-                is.close();
-
-                pw.close();
+                //br.close();
+                //isr.close();
+                //is.close();
+                //pw.close();
                 os.close();
 
                 clientSocket.close();
