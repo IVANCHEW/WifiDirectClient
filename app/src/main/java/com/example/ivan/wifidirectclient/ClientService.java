@@ -14,8 +14,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Created by ivan on 07/07/16.
@@ -28,7 +31,6 @@ public class ClientService extends IntentService {
     private WifiP2pDevice targetDevice;
     private WifiP2pInfo wifiP2pInfo;
     private byte[] pictureData;
-
 
     public ClientService(){
         super("ClientService");
@@ -51,33 +53,100 @@ public class ClientService extends IntentService {
             OutputStream os=null;
 
             try{
+                //STANDARD INITIATION CODE
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
-                //PrintWriter pw = new PrintWriter(os);
 
-                //InputStream is = clientSocket.getInputStream();
-                //InputStreamReader isr = new InputStreamReader(is);
-                //BufferedReader br = new BufferedReader(isr);
+                //THE FOLLOWING CHUNK OF CODE USE DATA PACKAGING METHODS
+                /*
+                int pLen = pictureData.length;
+                int minLen = 2000;
+                int spaces = 2;
+                int maxLen = minLen + spaces*1024;
+                byte[] byte3 = new byte[2048];
+                byte[] byte4  =new byte[1024];
+                byte[] byte5  =new byte[1024];
+                byte[] byte1 = new byte[4];
+                byte[] combined1, combined2;
 
-               //Send Data
+                Log.d("NEUTRAL","Picture Data Length: " + pLen);
+                //Min and Max pictureData length:
+                if (pLen>minLen && pLen <maxLen){
+                    //First component
+                    Log.d("NEUTRAL","Picture Length Sent: " + pLen);
+                    ByteBuffer b = ByteBuffer.allocate(4);
+                    b.putInt(pLen);
+                    byte1=b.array();
+
+                    //Third Commponent
+                    int sLen = maxLen - pLen;
+                    //Only one space needed
+                    if (sLen<=(1024)){
+                        //Log.d("NEUTRAL","Space Data Length: " + sLen);
+                        String space ="";
+                        int x = 0;
+                        while (x<sLen){
+                            space = space + "0";
+                            x+=1;
+                        }
+                        try {
+                            byte3 = (space).getBytes("UTF-8");
+                        } catch (UnsupportedEncodingException e) {
+                            //Log.d("NEUTRAL","Error: " + e.getMessage());
+                        }
+                        //Log.d("NEUTRAL","Space Byte Length: " + byte3.length);
+                    }else{
+                        String space ="";
+                        String space2 = "";
+                        sLen=sLen-1024;
+                        for(int i=0; i<1024 ; i++){
+                            space = space + "0";
+                        }
+                        for(int i=0; i<sLen ; i++){
+                            space2 = space2 + "0";
+                        }
+                        try {
+                            byte5 = (space).getBytes("UTF-8");
+                            byte4 = (space2).getBytes("UTF-8");
+
+                            byte3 = combineArray(byte4,byte5);
+
+                        } catch (UnsupportedEncodingException e) {
+                            //Log.d("NEUTRAL","Error: " + e.getMessage());
+                        }
+                    }
+                    try{
+
+                        combined1 = combineArray(pictureData,byte3);
+                        combined2 = combineArray(byte1,combined1);
+                        os.write(combined2,0,combined2.length);
+
+                        //Log.d("NEUTRAL","Length of packaged byte: " + combined2.length);
+
+                        clientResult.send(port,null);
+
+                    }catch (Exception e) {
+                        Log.d("NEUTRAL","Error: " + e.getMessage());
+                    }
+                }
+                */
+
+               //THE FOLLOWING CODES USES DIRECT WRITING METHODS
+
                 os.write(pictureData,0,pictureData.length);
-                os.flush();
-                //br.close();
-                //isr.close();
-                //is.close();
-                //pw.close();
-                os.close();
-
-                clientSocket.close();
-
                 clientResult.send(port,null);
+                os.flush();
+
+                //STANDARD CLOSURE CODES
+                os.close();
+                clientSocket.close();
 
             }catch (IOException e){
                 //signalActivity(e.getMessage());
-                Log.d("NEUTRAL","Error: " + e.getMessage());
+                Log.d("NEUTRAL","Client Service Error, IO Exception: " + e.getMessage());
             }catch (Exception e){
                 //signalActivity(e.getMessage());
-                Log.d("NEUTRAL","Error: " + e.getMessage());
+                Log.d("NEUTRAL","Client Service Error: " + e.getMessage());
             }
         }else{
             signalActivity("Target device is a group owner");
@@ -97,6 +166,33 @@ public class ClientService extends IntentService {
         serviceEnabled=false;
         Log.d("NEUTRAL","Client Service Destroyed");
         stopSelf();
+    }
+
+    public static byte[][] divideArray(byte[] source, int chunksize) {
+
+
+        byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];
+
+        int start = 0;
+
+        for(int i = 0; i < ret.length; i++) {
+            ret[i] = Arrays.copyOfRange(source,start, start + chunksize);
+            start += chunksize ;
+        }
+
+        return ret;
+    }
+
+    public static byte[] combineArray(byte[] A, byte[] B){
+
+        byte[] C = new byte[A.length+B.length];
+
+        for (int i = 0; i < (A.length+B.length); ++i)
+        {
+            C[i] = i < A.length ? A[i] : B[i - A.length];
+        }
+
+        return C;
     }
 
 }

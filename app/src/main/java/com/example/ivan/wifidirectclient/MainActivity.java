@@ -2,6 +2,7 @@ package com.example.ivan.wifidirectclient;
 
 
 import android.app.Activity;
+import android.app.VoiceInteractor;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,16 +23,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity implements WifiP2pManager.PeerListListener{
+public class MainActivity extends Activity implements WifiP2pManager.PeerListListener, AdapterView.OnItemSelectedListener {
 
     WifiP2pManager mManager;
     WifiP2pManager.Channel mChannel;
@@ -68,7 +74,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     ImageView imageView;
     Bitmap bmpout;
-    int count;
+    int count=0;
+    Spinner spinner;
+    ArrayAdapter<String> spinnerArrayAdapter;
+    List<Camera.Size> resSize;
+    Camera.Size selectedRes;
+    List<String> supportedRes = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +106,17 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         editText1 = (EditText)findViewById(R.id.editText);
 
         imageView = (ImageView)findViewById(R.id.imageView);
+        spinner = (Spinner)findViewById(R.id.spinner);
 
         //====================================INITIATE THE CAMERA=================================
         openCamera();
+        getResSize();
+
+        spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, supportedRes);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerArrayAdapter);
+        spinner.setOnItemSelectedListener(this);
+        spinner.setAdapter(spinnerArrayAdapter);
 
         mPreview = new Preview(this, mainCamera);
 
@@ -105,8 +124,14 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         mPreview.callHandler(new Handler(){
 
             public void handleMessage(Message msg){
+
+                //Log.d("NEUTRAL","Frame Received");
+
                 if (activeTransfer==false){
                     pictureData =(byte[]) msg.obj;
+                    count = count + 1;
+                    Log.d("NEUTRAL","Frame Count = " + count);
+                    Log.d("NEUTRAL","Data Length = " + pictureData.length);
                     sendData();
                 }
             }
@@ -184,7 +209,47 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 sendData = editText1.getText().toString();
                 sendData();
                 */
+
+                /*
+                int x = Integer.parseInt(editText1.getText().toString());
+                Log.d("NEUTRAL", "Integer Value: " + x);
+
+                ByteBuffer b = ByteBuffer.allocate(4);
+                b.putInt(x);
+                byte[] byte1=b.array();
+                Log.d("NEUTRAL", "Integer Byte Length: " + byte1.length);
+
+                String y = editText1.getText().toString();
+                Log.d("NEUTRAL","String value: " + y);
+
+                byte[] byte2 = new byte[16];
+                try {
+                    byte2 = (y).getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    Log.d("NEUTRAL","Error: " + e.getMessage());
+                }
+                Log.d("NEUTRAL", "String byte length: " + byte2.length);
+                */
+
+                /*
+                int sLen = Integer.parseInt(editText1.getText().toString());
+                Log.d("NEUTRAL","Number of spaces: " + sLen);
+                String space ="";
+                int x = 0;
+                while (x<sLen){
+                    space = space + "0";
+                    x+=1;
+                }
+                byte[] byte3 = new byte[256];
+                try {
+                    byte3 = (space).getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    Log.d("NEUTRAL","Error: " + e.getMessage());
+                }
+                Log.d("NEUTRAL","Space Byte Length: " + byte3.length);
+
                 Log.d("NEUTRAL","BUTTON CLICKED");
+                 */
             }
         });
 
@@ -210,6 +275,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             public void onClick(View v) {
                 if (previewState=="OFF"){
                     try{
+                        mPreview.setRes(selectedRes);
                         frame1.addView(mPreview);
                         previewState="ON";
                     }catch(RuntimeException e){
@@ -221,6 +287,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 else if(previewState=="PAUSE"){
                     try{
                         openCamera();
+                        mPreview.setRes(selectedRes);
                         mPreview.resumePreview(mainCamera);
                         frame1.addView(mPreview);
                         previewState="ON";
@@ -235,6 +302,35 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
             }
         });
+    }
+
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        spinner.setSelection(position);
+        selectedRes = resSize.get(position);
+        Log.d("NEUTRAL","Res Size Selected, Width: " + selectedRes.width + " , Height: " + selectedRes.height);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+        // TODO Auto-generated method stub
+        spinner.setSelection(0);
+        selectedRes =resSize.get(0);
+    }
+
+    private void getResSize(){
+        Log.d("NEUTRAL", "Get Res Size Called");
+        try{
+            resSize = mainCamera.getParameters().getSupportedPreviewSizes();
+
+            for (Camera.Size x: resSize){
+                supportedRes.add(x.width + " x " + x.height);
+            }
+
+            //spinner.setAdapter(spinnerArrayAdapter);
+
+        }catch(Exception e){
+            Log.d("NEUTRAL","Error in getting Res Size: " + e.getMessage());
+        }
     }
 
     @Override
@@ -274,10 +370,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     public void sendData(){
 
+        Log.d("NEUTRAL","Send Data Called");
         if(activeTransfer==false){
 
             activeTransfer = true;
-
             if(!transferReadyState){
                 Log.d("NEUTRAL","Error - Connection not ready");
                 text1.setText("Error - Connection not ready");
@@ -355,4 +451,15 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         }
     }
 
+    public static byte[] combineArray(byte[] A, byte[] B){
+
+        byte[] C = new byte[A.length+B.length];
+
+        for (int i = 0; i < (A.length+B.length); ++i)
+        {
+            C[i] = i < A.length ? A[i] : B[i - A.length];
+        }
+
+        return C;
+    }
 }

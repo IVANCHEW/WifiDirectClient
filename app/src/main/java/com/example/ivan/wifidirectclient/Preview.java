@@ -20,6 +20,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
     SurfaceHolder mHolder;
     Camera mCamera;
     Camera.Size previewSize;
+    List<Camera.Size> resSize;
     Camera.Parameters param;
     Boolean TrackTarget =false;
     int[] colorSample = new int[3];
@@ -30,6 +31,8 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
     double[] labColor2= new double[3];
     double[] labColor1= new double[3];
     List<int[]> fpsList;
+
+    int resSelection;
 
     //Prepare handler to send message
     private Handler previewHandler=null;
@@ -69,19 +72,32 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
 
         //Sets Smallest Preview Size
         param = mCamera.getParameters();
-        previewSize = getSmallestPreviewSize(width,height);
-        param.setPreviewSize(previewSize.width,previewSize.height);
-        //param.setPreviewSize(640,480);
 
-        //getFPS();
-        param.setPreviewFpsRange(7000,12000);
+        //TO SET SMALLEST PREVIEW SIZE USE THE FOLLOWING 2 LINES OF CODE
+        //previewSize = getSmallestPreviewSize(width,height);
+        //param.setPreviewSize(previewSize.width,previewSize.height);
+
+        //TO MANUALLY SET THE PREVIEW SIZE, USE THE FOLLOWING
+        /*
+        getResSize();
+        resSelection = 10;
+        param.setPreviewSize(resSize.get(resSelection).width,
+                resSize.get(resSelection).height);
+        Log.d("NEUTRAL","Preview Size, Width: " + resSize.get(resSelection).width +
+            " Height: " + resSize.get(resSelection).height);
+        */
+
+        //TO SET PREVIEW SIZE FROM THE USER INTERFACE
+        param.setPreviewSize(previewSize.width,previewSize.height);
+
+        getFPS();
+        param.setPreviewFpsRange(4000,30000);
         //Constant for NV21 format is 17
         param.setPreviewFormat(17);
 
         mCamera.setDisplayOrientation(0);
         mCamera.setParameters(param);
-        pixels = new int[previewSize.width* previewSize.height];
-        Log.d("NEUTRAL3","Preview Size: Width=" + previewSize.width + " Height=" + previewSize.height);
+        //pixels = new int[previewSize.width* previewSize.height];
 
         try{
             mCamera.startPreview();
@@ -129,6 +145,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         for (Camera.Size size : param.getSupportedPreviewSizes()){
             if (result==null){result=size;}
             else{
+
                 int resultArea = result.width*result.height;
                 int newArea = size.width*size.height;
 
@@ -156,6 +173,18 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
 
     }
 
+    private void getResSize(){
+        try{
+            resSize = param.getSupportedPreviewSizes();
+
+            for (Camera.Size x: resSize){
+                //Log.d("NEUTRAL","Width: " + x.width + " Height: " + x.height);
+            }
+        }catch(Exception e){
+            Log.d("NEUTRAL","Error in getting Res Size: " + e.getMessage());
+        }
+    }
+
     public void sendColor(int data, double[] getLAB){
 
         hexColor = data;
@@ -166,27 +195,34 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         TrackTarget = true;
     }
 
+    public void setRes(Camera.Size s){
+        previewSize=s;
+    }
+
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
         //count = count + 1;
         //Log.d("NEUTRAL", "Frame received");
+        try{
+            Camera.Parameters parameters = camera.getParameters();
+            int width = parameters.getPreviewSize().width;
+            int height = parameters.getPreviewSize().height;
 
-        Camera.Parameters parameters = camera.getParameters();
-        int width = parameters.getPreviewSize().width;
-        int height = parameters.getPreviewSize().height;
+            YuvImage yuv = new YuvImage(data, parameters.getPreviewFormat(), width, height, null);
 
-        YuvImage yuv = new YuvImage(data, parameters.getPreviewFormat(), width, height, null);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
+            byte[] bytes = out.toByteArray();
 
-        byte[] bytes = out.toByteArray();
-
-        previewHandler.removeCallbacksAndMessages(null);
-        Message msg = Message.obtain();
-        msg.obj =bytes;
-        msg.setTarget(previewHandler);
-        msg.sendToTarget();
+            previewHandler.removeCallbacksAndMessages(null);
+            Message msg = Message.obtain();
+            msg.obj =bytes;
+            msg.setTarget(previewHandler);
+            msg.sendToTarget();
+        }catch(Exception e){
+            Log.d("NEUTRAL","Error in Preview Callback: " + e.getMessage());
+        }
     }
 
     public void resumePreview(Camera camera){
