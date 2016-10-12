@@ -10,6 +10,11 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.AudioTrack;
+import android.media.MediaRecorder;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -32,7 +37,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +60,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     IntentFilter mIntentFilter;
 
-    Button button1, button2, button3, button4, button5;
+    Button button1, button2, button3, button4, button5, button6;
     EditText editText1;
     FrameLayout frame1;
     TextView text1;
@@ -81,6 +89,16 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     Camera.Size selectedRes;
     List<String> supportedRes = new ArrayList<String>();
 
+    //AUDIO DECLARATIONS
+    AudioRecord recorder;
+    private int sampleRate = 8000;
+    private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
+    private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+    private boolean audioStatus = true;
+    private AudioTrack speaker;
+    int minBufSize = 1026;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +119,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         button3 = (Button)findViewById(R.id.button3);
         button4 = (Button)findViewById(R.id.button4);
         button5= (Button)findViewById(R.id.button5);
+        button6 = (Button)findViewById(R.id.button6);
         text1 = (TextView)findViewById(R.id.textView1);
         frame1= (FrameLayout)findViewById(R.id.previewFrame);
         editText1 = (EditText)findViewById(R.id.editText);
@@ -201,55 +220,29 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             }
         });
 
-        //SEND DATA
+        //================SEND AUDIO========================
         button3.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+                audioStatus=true;
+                //minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
+                Log.d("NEUTRAL", "Recorder initialized");
                 /*
-                sendData = editText1.getText().toString();
-                sendData();
+                speaker = new AudioTrack(AudioManager.STREAM_MUSIC,sampleRate,channelConfig,audioFormat,minBufSize, AudioTrack.MODE_STREAM);
+                speaker.play();
+                Log.d("NEUTRAL", "Speaker initialized");
                 */
+                startStreaming();
+            }
+        });
 
-                /*
-                int x = Integer.parseInt(editText1.getText().toString());
-                Log.d("NEUTRAL", "Integer Value: " + x);
-
-                ByteBuffer b = ByteBuffer.allocate(4);
-                b.putInt(x);
-                byte[] byte1=b.array();
-                Log.d("NEUTRAL", "Integer Byte Length: " + byte1.length);
-
-                String y = editText1.getText().toString();
-                Log.d("NEUTRAL","String value: " + y);
-
-                byte[] byte2 = new byte[16];
-                try {
-                    byte2 = (y).getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    Log.d("NEUTRAL","Error: " + e.getMessage());
-                }
-                Log.d("NEUTRAL", "String byte length: " + byte2.length);
-                */
-
-                /*
-                int sLen = Integer.parseInt(editText1.getText().toString());
-                Log.d("NEUTRAL","Number of spaces: " + sLen);
-                String space ="";
-                int x = 0;
-                while (x<sLen){
-                    space = space + "0";
-                    x+=1;
-                }
-                byte[] byte3 = new byte[256];
-                try {
-                    byte3 = (space).getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    Log.d("NEUTRAL","Error: " + e.getMessage());
-                }
-                Log.d("NEUTRAL","Space Byte Length: " + byte3.length);
-
-                Log.d("NEUTRAL","BUTTON CLICKED");
-                 */
+        button6.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                audioStatus=false;
+                recorder.release();
+                //speaker.release();
             }
         });
 
@@ -462,4 +455,101 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
         return C;
     }
+
+    public void startStreaming(){
+        final Thread streamThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+
+                    Log.d("NEUTRAL","Main Activity: Started Audio Streaming Thread");
+                    recorder.startRecording();
+
+                    while(audioStatus == true) {
+                        byte[] buffer = new byte[minBufSize];
+                        Log.d("NEUTRAL","Buffer created of size " + minBufSize);
+                        //reading data from MIC into buffer
+                        recorder.read(buffer, 0, buffer.length);
+                        Log.d("NEUTRAL","Finished Reading Recorder Data");
+                        sendAudioData(buffer);
+
+                        //Thread.sleep(1000);
+                        //replayAudio(buffer);
+
+
+                    }
+
+                } catch (Exception e) {
+                    Log.d("NEUTRAL", "IOException: " + e.getMessage());
+                }
+
+            }
+
+        });
+        streamThread.start();
+    }
+
+    public void sendAudioData(byte[] audioData){
+
+        Log.d("NEUTRAL","Send Data Called");
+        if(activeTransfer==false){
+
+            activeTransfer = true;
+            if(!transferReadyState){
+                Log.d("NEUTRAL","Error - Connection not ready");
+                text1.setText("Error - Connection not ready");
+            }else if(wifiP2pInfo==null){
+                Log.d("NEUTRAL","Error - Missing Wifi P2P Information");
+                text1.setText("Error - Missing Wifi P2P Information");
+            }
+            else
+            {
+                //Launch Client Service
+                //Log.d("NEUTRAL","Data Sent");
+                clientServiceIntent = new Intent(this, ClientService.class);
+                clientServiceIntent.putExtra("port",new Integer(port));
+                clientServiceIntent.putExtra("wifiInfo",wifiP2pInfo);
+                clientServiceIntent.putExtra("pictureData",audioData);
+                clientServiceIntent.putExtra("clientResult", new ResultReceiver(null){
+
+                    @Override
+                    protected void onReceiveResult(int resultCode, final Bundle resultData){
+                        if(resultCode == port){
+
+                            if(resultData==null){
+                                activeTransfer=false;
+
+                            }else{
+                                final TextView client_status_text= (TextView) findViewById(R.id.textView2);
+                                client_status_text.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        client_status_text.setText((String)resultData.get("message"));
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+                this.startService(clientServiceIntent);
+            }
+        }else
+        {
+            Log.d("NEUTRAL","Cannot Send Data");
+        }
+
+    }
+
+    /*
+    public void replayAudio(byte[] audioByte){
+
+        Log.d("NEUTRAL","Replay Audio Called");
+
+        //int minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+        speaker.write(audioByte, 0, audioByte.length);
+
+    }
+    */
+
 }

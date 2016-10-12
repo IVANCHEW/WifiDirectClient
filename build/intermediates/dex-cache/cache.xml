@@ -40,7 +40,7 @@
         jar="/home/ivan/AndroidStudioProjects/WifiDirectClient/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         revision="24.0.1"
-        sha1="a3f4de5ca19cd996109730b554380656f4ec699b">
+        sha1="79ad0b57b85464d9a8e10346092dbb225f221b25">
         <dex dex="/home/ivan/AndroidStudioProjects/WifiDirectClient/app/build/intermediates/pre-dexed/debug/instant-run_25f0743f33d9cffe2a94a0d35e8ffc5c19dd6cdd.jar" />
     </item>
     <item
@@ -68,7 +68,7 @@
         jar="/home/ivan/AndroidStudioProjects/WifiDirectClient/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="24.0.1"
-        sha1="6cf1f26f4c9c5ec2d2cb3ae7b2246dd0fbfd74a9">
+        sha1="0f70ae4d405b4c281c2622018d1f9be343d62980">
         <dex dex="/home/ivan/AndroidStudioProjects/WifiDirectClient/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_f682a420648add864d840aeb60464b58f7bb945e.jar" />
     </item>
     <item

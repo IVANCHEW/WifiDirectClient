@@ -49,7 +49,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Send Data"
+        android:text="Start Audio"
         android:id="@+id/button3"
         android:layout_toRightOf="@id/button2"
         android:layout_alignBottom="@id/button1"/>
@@ -104,6 +104,15 @@
         android:layout_alignStart="@+id/button5"
         android:contextClickable="false"
         android:background="#888888" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop Audio"
+        android:id="@+id/button6"
+        android:layout_alignBottom="@+id/spinner"
+        android:layout_toRightOf="@+id/textView2"
+        android:layout_toEndOf="@+id/textView2" />
 
 
 </RelativeLayout>

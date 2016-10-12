@@ -170,7 +170,6 @@ public class ClientService extends IntentService {
 
     public static byte[][] divideArray(byte[] source, int chunksize) {
 
-
         byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];
 
         int start = 0;
