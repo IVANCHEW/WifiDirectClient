@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -30,7 +31,7 @@ public class ClientService extends IntentService {
     private ResultReceiver clientResult;
     private WifiP2pDevice targetDevice;
     private WifiP2pInfo wifiP2pInfo;
-    private byte[] pictureData;
+    private byte[] pictureData, audioData;
 
     public ClientService(){
         super("ClientService");
@@ -45,17 +46,37 @@ public class ClientService extends IntentService {
         clientResult = (ResultReceiver) intent.getExtras().get("clientResult");
         wifiP2pInfo = (WifiP2pInfo) intent.getExtras().get("wifiInfo");
         pictureData =(byte[])intent.getExtras().get("pictureData");
+        audioData = (byte[])intent.getExtras().get("audioData");
 
         if(!wifiP2pInfo.isGroupOwner){
             //Log.d("NEUTRAL","Begin sending data");
             InetAddress targetIP = wifiP2pInfo.groupOwnerAddress;
             Socket clientSocket=null;
             OutputStream os=null;
+            ObjectOutputStream oos = null;
 
             try{
                 //STANDARD INITIATION CODE
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
+
+                os.write(pictureData,0,pictureData.length);
+                clientResult.send(port,null);
+                os.flush();
+
+                os.close();
+                clientSocket.close();
+
+
+                clientSocket = new Socket(targetIP,port);
+                os = clientSocket.getOutputStream();
+
+                os.write(audioData,0,audioData.length);
+                clientResult.send(port,null);
+                os.flush();
+
+                os.close();
+                clientSocket.close();
 
                 //THE FOLLOWING CHUNK OF CODE USE DATA PACKAGING METHODS
                 /*
@@ -131,15 +152,14 @@ public class ClientService extends IntentService {
                 }
                 */
 
-               //THE FOLLOWING CODES USES DIRECT WRITING METHODS
-
-                os.write(pictureData,0,pictureData.length);
+                /*
+                oos.write(pictureData);
                 clientResult.send(port,null);
-                os.flush();
+                oos.flush();
+                */
 
                 //STANDARD CLOSURE CODES
-                os.close();
-                clientSocket.close();
+                //oos.close();
 
             }catch (IOException e){
                 //signalActivity(e.getMessage());

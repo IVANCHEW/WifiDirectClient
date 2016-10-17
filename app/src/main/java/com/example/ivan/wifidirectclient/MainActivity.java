@@ -78,7 +78,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     Camera mainCamera;
     Preview mPreview;
     String previewState = "OFF";
-    public byte[] pictureData;
+    public byte[] pictureData, audioData;
 
     ImageView imageView;
     Bitmap bmpout;
@@ -194,7 +194,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             }
         });
 
-        //CONNECT TO PEER
+        //================CONNECT TO PEER================
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -363,7 +363,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     public void sendData(){
 
-        Log.d("NEUTRAL","Send Data Called");
+        //Log.d("NEUTRAL","Send Data Called");
         if(activeTransfer==false){
 
             activeTransfer = true;
@@ -382,6 +382,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 clientServiceIntent.putExtra("port",new Integer(port));
                 clientServiceIntent.putExtra("wifiInfo",wifiP2pInfo);
                 clientServiceIntent.putExtra("pictureData",pictureData);
+                clientServiceIntent.putExtra("audioData", audioData);
                 clientServiceIntent.putExtra("clientResult", new ResultReceiver(null){
 
                     @Override
@@ -468,11 +469,14 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
                     while(audioStatus == true) {
                         byte[] buffer = new byte[minBufSize];
-                        Log.d("NEUTRAL","Buffer created of size " + minBufSize);
+                        //Log.d("NEUTRAL","Buffer created of size " + minBufSize);
                         //reading data from MIC into buffer
                         recorder.read(buffer, 0, buffer.length);
-                        Log.d("NEUTRAL","Finished Reading Recorder Data");
-                        sendAudioData(buffer);
+                        //Log.d("NEUTRAL","Finished Reading Recorder Data");
+
+                        audioData = buffer;
+
+                        //sendAudioData(buffer);
 
                         //Thread.sleep(1000);
                         //replayAudio(buffer);
@@ -510,7 +514,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 clientServiceIntent = new Intent(this, ClientService.class);
                 clientServiceIntent.putExtra("port",new Integer(port));
                 clientServiceIntent.putExtra("wifiInfo",wifiP2pInfo);
-                clientServiceIntent.putExtra("pictureData",audioData);
+                clientServiceIntent.putExtra("audioData",audioData);
                 clientServiceIntent.putExtra("clientResult", new ResultReceiver(null){
 
                     @Override
