@@ -96,7 +96,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private boolean audioStatus = true;
     private AudioTrack speaker;
-    int minBufSize = 1026;
+    int minBufSize = 1024;
 
 
     @Override
@@ -224,8 +224,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         button3.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
+
                 audioStatus=true;
-                //minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                //Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
                 recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                 Log.d("NEUTRAL", "Recorder initialized");
                 /*
@@ -233,7 +235,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 speaker.play();
                 Log.d("NEUTRAL", "Speaker initialized");
                 */
-                startStreaming();
+                startAudioStreaming();
             }
         });
 
@@ -251,6 +253,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             @Override
             public void onClick(View v) {
                 if (previewState=="ON"){
+
+                    audioStatus = false;
+                    recorder.release();
+
                     frame1.removeAllViews();
                     releaseCamera();
 
@@ -267,6 +273,13 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             @Override
             public void onClick(View v) {
                 if (previewState=="OFF"){
+
+                    audioStatus = true;
+                    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
+                    Log.d("NEUTRAL", "Recorder initialized");
+                    startAudioStreaming();
+
+
                     try{
                         mPreview.setRes(selectedRes);
                         frame1.addView(mPreview);
@@ -279,6 +292,14 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 }
                 else if(previewState=="PAUSE"){
                     try{
+
+
+                        audioStatus = true;
+                        recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
+                        Log.d("NEUTRAL", "Recorder initialized");
+                        startAudioStreaming();
+
+
                         openCamera();
                         mPreview.setRes(selectedRes);
                         mPreview.resumePreview(mainCamera);
@@ -457,7 +478,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         return C;
     }
 
-    public void startStreaming(){
+    public void startAudioStreaming(){
         final Thread streamThread = new Thread(new Runnable() {
 
             @Override
@@ -494,6 +515,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         streamThread.start();
     }
 
+    /*
     public void sendAudioData(byte[] audioData){
 
         Log.d("NEUTRAL","Send Data Called");
@@ -544,6 +566,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         }
 
     }
+    */
 
     /*
     public void replayAudio(byte[] audioByte){

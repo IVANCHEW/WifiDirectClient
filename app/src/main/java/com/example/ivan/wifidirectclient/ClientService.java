@@ -53,119 +53,22 @@ public class ClientService extends IntentService {
             InetAddress targetIP = wifiP2pInfo.groupOwnerAddress;
             Socket clientSocket=null;
             OutputStream os=null;
-            ObjectOutputStream oos = null;
 
             try{
-                //STANDARD INITIATION CODE
-                clientSocket = new Socket(targetIP,port);
-                os = clientSocket.getOutputStream();
-
-                os.write(pictureData,0,pictureData.length);
-                clientResult.send(port,null);
-                os.flush();
-
-                os.close();
-                clientSocket.close();
-
-
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
 
                 os.write(audioData,0,audioData.length);
+                os.write(pictureData,0,pictureData.length);
+
                 clientResult.send(port,null);
                 os.flush();
 
                 os.close();
                 clientSocket.close();
-
-                //THE FOLLOWING CHUNK OF CODE USE DATA PACKAGING METHODS
-                /*
-                int pLen = pictureData.length;
-                int minLen = 2000;
-                int spaces = 2;
-                int maxLen = minLen + spaces*1024;
-                byte[] byte3 = new byte[2048];
-                byte[] byte4  =new byte[1024];
-                byte[] byte5  =new byte[1024];
-                byte[] byte1 = new byte[4];
-                byte[] combined1, combined2;
-
-                Log.d("NEUTRAL","Picture Data Length: " + pLen);
-                //Min and Max pictureData length:
-                if (pLen>minLen && pLen <maxLen){
-                    //First component
-                    Log.d("NEUTRAL","Picture Length Sent: " + pLen);
-                    ByteBuffer b = ByteBuffer.allocate(4);
-                    b.putInt(pLen);
-                    byte1=b.array();
-
-                    //Third Commponent
-                    int sLen = maxLen - pLen;
-                    //Only one space needed
-                    if (sLen<=(1024)){
-                        //Log.d("NEUTRAL","Space Data Length: " + sLen);
-                        String space ="";
-                        int x = 0;
-                        while (x<sLen){
-                            space = space + "0";
-                            x+=1;
-                        }
-                        try {
-                            byte3 = (space).getBytes("UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            //Log.d("NEUTRAL","Error: " + e.getMessage());
-                        }
-                        //Log.d("NEUTRAL","Space Byte Length: " + byte3.length);
-                    }else{
-                        String space ="";
-                        String space2 = "";
-                        sLen=sLen-1024;
-                        for(int i=0; i<1024 ; i++){
-                            space = space + "0";
-                        }
-                        for(int i=0; i<sLen ; i++){
-                            space2 = space2 + "0";
-                        }
-                        try {
-                            byte5 = (space).getBytes("UTF-8");
-                            byte4 = (space2).getBytes("UTF-8");
-
-                            byte3 = combineArray(byte4,byte5);
-
-                        } catch (UnsupportedEncodingException e) {
-                            //Log.d("NEUTRAL","Error: " + e.getMessage());
-                        }
-                    }
-                    try{
-
-                        combined1 = combineArray(pictureData,byte3);
-                        combined2 = combineArray(byte1,combined1);
-                        os.write(combined2,0,combined2.length);
-
-                        //Log.d("NEUTRAL","Length of packaged byte: " + combined2.length);
-
-                        clientResult.send(port,null);
-
-                    }catch (Exception e) {
-                        Log.d("NEUTRAL","Error: " + e.getMessage());
-                    }
-                }
-                */
-
-                /*
-                oos.write(pictureData);
-                clientResult.send(port,null);
-                oos.flush();
-                */
-
-                //STANDARD CLOSURE CODES
-                //oos.close();
-
             }catch (IOException e){
-                //signalActivity(e.getMessage());
                 Log.d("NEUTRAL","Client Service Error, IO Exception: " + e.getMessage());
             }catch (Exception e){
-                //signalActivity(e.getMessage());
                 Log.d("NEUTRAL","Client Service Error: " + e.getMessage());
             }
         }else{

@@ -67,7 +67,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Preview"
+        android:text="Start Streaming"
         android:id="@+id/button5"
         android:layout_alignTop="@+id/button3"
         android:layout_toRightOf="@+id/button3"
@@ -89,7 +89,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Stop Preview"
+        android:text="Stop Streaming"
         android:id="@+id/button4"
         android:layout_alignTop="@+id/button3"
         android:layout_toRightOf="@+id/button5"
