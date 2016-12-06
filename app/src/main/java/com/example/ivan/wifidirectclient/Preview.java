@@ -91,7 +91,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         param.setPreviewSize(previewSize.width,previewSize.height);
 
         getFPS();
-        param.setPreviewFpsRange(4000,30000);
+        param.setPreviewFpsRange(4000,15000);
         //Constant for NV21 format is 17
         param.setPreviewFormat(17);
 
