@@ -150,7 +150,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                     pictureData =(byte[]) msg.obj;
                     count = count + 1;
                     Log.d("NEUTRAL","Frame Count = " + count);
-                    Log.d("NEUTRAL","Data Length = " + pictureData.length);
+                    //Log.d("NEUTRAL","Data Length = " + pictureData.length);
                     sendData();
                 }
             }

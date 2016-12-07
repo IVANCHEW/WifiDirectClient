@@ -57,9 +57,13 @@ public class ClientService extends IntentService {
             try{
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
-
-                os.write(audioData,0,audioData.length);
-                os.write(pictureData,0,pictureData.length);
+                byte[] transfer = new byte[audioData.length + pictureData.length];
+                System.arraycopy(audioData,0 , transfer, 0, audioData.length);
+                System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
+                os.write(transfer,0 ,transfer.length);
+                Log.d("NEUTRAL","Data Length: " + transfer.length);
+                //os.write(audioData,0,audioData.length);
+                //os.write(pictureData,0,pictureData.length);
 
                 clientResult.send(port,null);
                 os.flush();

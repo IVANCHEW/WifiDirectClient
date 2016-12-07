@@ -91,7 +91,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         param.setPreviewSize(previewSize.width,previewSize.height);
 
         getFPS();
-        param.setPreviewFpsRange(4000,15000);
+        param.setPreviewFpsRange(7000,20000);
         //Constant for NV21 format is 17
         param.setPreviewFormat(17);
 
@@ -101,6 +101,8 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
 
         try{
             mCamera.startPreview();
+            Log.d("NEUTRAL", "Camera Preview Size: " + previewSize.width + " x " + previewSize.height);
+            Log.d("NEUTRAL", "Preview Format: " + param.getPreviewFormat());
         }catch(Exception e){
             Log.d("NEUTRAL","Error starting preview");
         }
@@ -204,6 +206,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         //count = count + 1;
         //Log.d("NEUTRAL", "Frame received");
         try{
+            /*
             Camera.Parameters parameters = camera.getParameters();
             int width = parameters.getPreviewSize().width;
             int height = parameters.getPreviewSize().height;
@@ -214,10 +217,11 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
             yuv.compressToJpeg(new Rect(0, 0, width, height), 50, out);
 
             byte[] bytes = out.toByteArray();
-
+            */
             previewHandler.removeCallbacksAndMessages(null);
             Message msg = Message.obtain();
-            msg.obj =bytes;
+
+            msg.obj =data;
             msg.setTarget(previewHandler);
             msg.sendToTarget();
         }catch(Exception e){
