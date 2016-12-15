@@ -91,13 +91,13 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     //AUDIO DECLARATIONS
     AudioRecord recorder;
-    private int sampleRate = 8000
+    private int sampleRate = 8000;
 ;
     private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private boolean audioStatus = true;
     private AudioTrack speaker;
-    int minBufSize = 1024;
+    int minBufSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,7 +226,8 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             public void onClick(View v){
 
                 audioStatus=true;
-                minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                //minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                //minBufSize = 2048;
                 Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
                 recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                 Log.d("NEUTRAL", "Recorder initialized");
@@ -281,7 +282,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             public void onClick(View v) {
                 if (previewState=="OFF"){
 
-                    minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                    //minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                    //minBufSize = 2048;
+                    minBufSize = 1024;
+                    Log.d("NEUTRAL","Audio Sample Rate is: " + sampleRate);
+                    Log.d("NEUTRAL","Audio File Format is: " + audioFormat);
+                    //Log.d("NEUTRAL","Ideal Audio Sample Rate is: ");
                     Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
                     audioStatus = true;
                     recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);

@@ -91,7 +91,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
         param.setPreviewSize(previewSize.width,previewSize.height);
 
         getFPS();
-        param.setPreviewFpsRange(7000,20000);
+        param.setPreviewFpsRange(9000,20000);
         //Constant for NV21 format is 17
         param.setPreviewFormat(17);
 
@@ -103,6 +103,7 @@ public class Preview extends SurfaceView implements SurfaceHolder.Callback, Came
             mCamera.startPreview();
             Log.d("NEUTRAL", "Camera Preview Size: " + previewSize.width + " x " + previewSize.height);
             Log.d("NEUTRAL", "Preview Format: " + param.getPreviewFormat());
+            //Log.d("NEUTRAL", "Preview Frame Rate: ");
         }catch(Exception e){
             Log.d("NEUTRAL","Error starting preview");
         }
