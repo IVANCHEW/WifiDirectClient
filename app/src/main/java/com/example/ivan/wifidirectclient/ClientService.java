@@ -53,15 +53,30 @@ public class ClientService extends IntentService {
             InetAddress targetIP = wifiP2pInfo.groupOwnerAddress;
             Socket clientSocket=null;
             OutputStream os=null;
+            byte[] transfer = null;
+
+
+            try{
+
+                transfer = new byte[audioData.length + pictureData.length];
+                System.arraycopy(audioData,0 , transfer, 0, audioData.length);
+                System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
+                //Log.d("NEUTRAL", "Length of picture array: " + pictureData.length);
+                //Log.d("NEUTRAL", "Length of audio array: " + audioData.length);
+
+            }catch (Exception e){
+                Log.d("NEUTRAL","Client Service Error, data compilation problem: " + e.getMessage());
+            }
+
 
             try{
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
-                byte[] transfer = new byte[audioData.length + pictureData.length];
-                System.arraycopy(audioData,0 , transfer, 0, audioData.length);
-                System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
+
                 os.write(transfer,0 ,transfer.length);
-                Log.d("NEUTRAL","Data Length: " + transfer.length);
+                //os.write(pictureData, 0, pictureData.length);
+
+                //Log.d("NEUTRAL","Data Length: " + transfer.length);
                 //os.write(audioData,0,audioData.length);
                 //os.write(pictureData,0,pictureData.length);
 

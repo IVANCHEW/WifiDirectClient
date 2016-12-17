@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
+import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.graphics.ColorUtils;
@@ -15,7 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 //Preview class used to start the camera preview
-public class Preview extends SurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback{
+public class Preview extends GLSurfaceView implements SurfaceHolder.Callback, Camera.PreviewCallback{
 
     SurfaceHolder mHolder;
     Camera mCamera;
