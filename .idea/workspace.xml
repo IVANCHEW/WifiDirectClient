@@ -27,13 +27,9 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.bin" afterPath="$PROJECT_DIR$/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.bin" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock" afterPath="$PROJECT_DIR$/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localClassSetAnalysis/localClassSetAnalysis.lock" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock" afterPath="$PROJECT_DIR$/.gradle/2.14.1/tasks/_app_compileDebugJavaWithJavac/localJarClasspathSnapshot/localJarClasspathSnapshot.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/app.iml" afterPath="$PROJECT_DIR$/app/app.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/ClientService.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/ClientService.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/MainActivity.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/MainActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/Preview.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/Preview.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/intermediates/dex-cache/cache.xml" afterPath="$PROJECT_DIR$/build/intermediates/dex-cache/cache.xml" />
     </list>
     <ignored path="WifiDirectClient.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -89,18 +85,10 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.82746476">
-              <caret line="693" column="40" selection-start-line="693" selection-start-column="40" selection-end-line="693" selection-end-column="40" />
+            <state vertical-scroll-proportion="0.5721925">
+              <caret line="770" column="31" selection-start-line="770" selection-start-column="31" selection-end-line="770" selection-end-column="31" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#17318#18160#0" expanded="true" />
-                <element signature="e#18159#18160#0" expanded="true" />
-                <element signature="e#18761#19078#0" expanded="true" />
-                <element signature="e#19077#19078#0" expanded="true" />
-                <element signature="e#19144#19145#0" expanded="true" />
-                <element signature="e#19191#19192#0" expanded="true" />
-                <element signature="e#24337#24338#0" expanded="true" />
-                <element signature="e#24391#24392#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1843,7 +1831,7 @@
     <property name="android.sdk.path" value="$USER_HOME$/Android/Sdk" />
     <property name="settings.editor.selected.configurable" value="android.sdk-updates" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
-    <property name="device.picker.selection" value="68a1879e" />
+    <property name="device.picker.selection" value="0123456789ABCDEF" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../ServoController" />
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
     <property name="ExportApk.Flavors" value="" />
@@ -2135,7 +2123,7 @@
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34812286" sideWeight="0.17800453" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31968147" sideWeight="0.82199544" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32764506" sideWeight="0.82199544" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32992035" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32992035" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2183,14 +2171,6 @@
           <caret line="354" column="72" selection-start-line="354" selection-start-column="72" selection-end-line="354" selection-end-column="72" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2234,14 +2214,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2285,14 +2257,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2336,14 +2300,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2387,14 +2343,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2438,14 +2386,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2489,14 +2429,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2540,14 +2472,6 @@
           <caret line="498" column="0" selection-start-line="498" selection-start-column="0" selection-end-line="498" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2591,14 +2515,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2630,14 +2546,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2669,14 +2577,6 @@
           <caret line="491" column="26" selection-start-line="491" selection-start-column="26" selection-end-line="491" selection-end-column="26" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2708,14 +2608,6 @@
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2795,18 +2687,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/ivan/wifidirectclient/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.82746476">
-          <caret line="693" column="40" selection-start-line="693" selection-start-column="40" selection-end-line="693" selection-end-column="40" />
+        <state vertical-scroll-proportion="0.5721925">
+          <caret line="770" column="31" selection-start-line="770" selection-start-column="31" selection-end-line="770" selection-end-column="31" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#17318#18160#0" expanded="true" />
-            <element signature="e#18159#18160#0" expanded="true" />
-            <element signature="e#18761#19078#0" expanded="true" />
-            <element signature="e#19077#19078#0" expanded="true" />
-            <element signature="e#19144#19145#0" expanded="true" />
-            <element signature="e#19191#19192#0" expanded="true" />
-            <element signature="e#24337#24338#0" expanded="true" />
-            <element signature="e#24391#24392#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -167,9 +167,6 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
             @Override
             public void handleMessage(Message msg)  {
-                int w = fixedWidth;
-                int h = fixedHeight
-                        ;
 
                 Bundle bundle = msg.getData();
                 pictureData = bundle.getByteArray("pictureData");
@@ -479,6 +476,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         }
     }
 
+
     public void releaseCamera(){
         if(mainCamera!=null){
             mainCamera.release();
@@ -687,6 +685,8 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
     }
 
     public void onSurfaceChanged (GL10 unused, int width, int height ) {
+        Log.d("NEUTRAL", "glSurfaceChanged Arguements, Width = " + width + " Height = " + height);
+        Log.d("NEUTRAL", "Specified dimensions: " + w + " by " + h);
         GLES20.glViewport( 0, 0, w, h );
         Camera.Parameters param = mCamera.getParameters();
         param.setPreviewSize(w, h);
@@ -750,9 +750,11 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
     private void createBitmap() {
         //Extract Byte[]
         try {
+            w=176;
+            h=144;
             ByteBuffer buf = ByteBuffer.allocateDirect(w * h * 4);
             GLES20.glReadPixels(0, 0, w, h, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buf);
-            buf.rewind();
+            //buf.rewind();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Bitmap bmpout;
             bmpout = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
