@@ -55,41 +55,27 @@ public class ClientService extends IntentService {
             OutputStream os=null;
             byte[] transfer = null;
 
+            //Log.d("NEUTRAL", "Client: Preparing Data");
 
-            try{
+            transfer = new byte[audioData.length + pictureData.length];
+            System.arraycopy(audioData,0 , transfer, 0, audioData.length);
+            System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
 
-                transfer = new byte[audioData.length + pictureData.length];
-                System.arraycopy(audioData,0 , transfer, 0, audioData.length);
-                System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
-                //Log.d("NEUTRAL", "Length of picture array: " + pictureData.length);
-                //Log.d("NEUTRAL", "Length of audio array: " + audioData.length);
-
-            }catch (Exception e){
-                Log.d("NEUTRAL","Client Service Error, data compilation problem: " + e.getMessage());
-            }
-
+            //Log.d("NEUTRAL", "Client: Preparing to send");
 
             try{
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
-
                 os.write(transfer,0 ,transfer.length);
-                //os.write(pictureData, 0, pictureData.length);
-
-                //Log.d("NEUTRAL","Data Length: " + transfer.length);
-                //os.write(audioData,0,audioData.length);
-                //os.write(pictureData,0,pictureData.length);
-
-                clientResult.send(port,null);
                 os.flush();
-
+                //Log.d("NEUTRAL","Send Complete");
                 os.close();
                 clientSocket.close();
+                clientResult.send(port,null);
             }catch (IOException e){
                 Log.d("NEUTRAL","Client Service Error, IO Exception: " + e.getMessage());
-            }catch (Exception e){
-                Log.d("NEUTRAL","Client Service Error: " + e.getMessage());
             }
+
         }else{
             signalActivity("Target device is a group owner");
             //Log.d("NEUTRAL","Target device is a group owner");
@@ -108,32 +94,6 @@ public class ClientService extends IntentService {
         serviceEnabled=false;
         Log.d("NEUTRAL","Client Service Destroyed");
         stopSelf();
-    }
-
-    public static byte[][] divideArray(byte[] source, int chunksize) {
-
-        byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];
-
-        int start = 0;
-
-        for(int i = 0; i < ret.length; i++) {
-            ret[i] = Arrays.copyOfRange(source,start, start + chunksize);
-            start += chunksize ;
-        }
-
-        return ret;
-    }
-
-    public static byte[] combineArray(byte[] A, byte[] B){
-
-        byte[] C = new byte[A.length+B.length];
-
-        for (int i = 0; i < (A.length+B.length); ++i)
-        {
-            C[i] = i < A.length ? A[i] : B[i - A.length];
-        }
-
-        return C;
     }
 
 }

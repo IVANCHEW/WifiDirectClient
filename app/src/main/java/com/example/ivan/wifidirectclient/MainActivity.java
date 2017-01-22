@@ -2,27 +2,21 @@ package com.example.ivan.wifidirectclient;
 
 
 import android.app.Activity;
-import android.app.VoiceInteractor;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLException;
@@ -35,8 +29,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -47,21 +40,17 @@ import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.DatagramPacket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-public class MainActivity extends Activity implements WifiP2pManager.PeerListListener, AdapterView.OnItemSelectedListener {
-
+//public class MainActivity extends Activity implements WifiP2pManager.PeerListListener, AdapterView.OnItemSelectedListener {
+public class MainActivity extends Activity implements WifiP2pManager.PeerListListener {
     WifiP2pManager mManager;
     WifiP2pManager.Channel mChannel;
     BroadcastReceiver mReceiver;
@@ -107,7 +96,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //AUDIO DECLARATIONS
     AudioRecord recorder;
     private int sampleRate = 8000;
-    int fixedBufferParameter = 1408;
+    //int fixedBufferParameter = 1408;
+    int fixedBufferParameter = 1500;
+    //int fixedWidth = 640;
+    //int fixedHeight = 480;
     int fixedWidth = 320;
     int fixedHeight = 240;
 ;
@@ -119,8 +111,6 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
     //OPEN GL STUFF
     private MainView mView;
-    private PowerManager.WakeLock mWL;
-    public Handler screenGrabHandler = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,20 +138,21 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         editText1 = (EditText)findViewById(R.id.editText);
 
         imageView = (ImageView)findViewById(R.id.imageView);
-        spinner = (Spinner)findViewById(R.id.spinner);
+        //spinner = (Spinner)findViewById(R.id.spinner);
 
         mView = new MainView(this, fixedWidth, fixedHeight);
 
         //====================================INITIATE THE CAMERA=================================
         //openCamera();
-        getResSize();
+        //getResSize();
         //Default resolution size
-
+        /*
         spinnerArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, supportedRes);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerArrayAdapter);
         spinner.setOnItemSelectedListener(this);
         spinner.setAdapter(spinnerArrayAdapter);
+        */
 
         mView.callHandler(new Handler(){
 
@@ -171,32 +162,6 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 Bundle bundle = msg.getData();
                 pictureData = bundle.getByteArray("pictureData");
                 sendData();
-
-                /*
-                //Byte extraction and bitmap recomposition test
-
-                IntBuffer intBuf =
-                        ByteBuffer.wrap(pictureData)
-                                .order(ByteOrder.LITTLE_ENDIAN)
-                                .asIntBuffer();
-                int[] array = new int[intBuf.remaining()];
-                intBuf.get(array);
-
-                bmpout = Bitmap.createBitmap(array, w, h, Bitmap.Config.ARGB_8888);
-                */
-
-                //bmpout = Bitmap.createBitmap(bitmapSource, w, h, Bitmap.Config.ARGB_8888);
-
-                //bmpout = BitmapFactory.decodeByteArray(pictureData,0,pictureData.length);
-
-                /*
-                if (bmpout == null) {
-                    Log.d("NEUTRAL", "Null Bitmap");
-                } else {
-                    imageView.setImageBitmap(bmpout);
-                    Log.d("NEUTRAL", "Handler called, bitmap updated");
-                }
-                */
 
             }
         });
@@ -214,6 +179,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 text1.setText("Wifi Direct Initiation: Peer Discovery Unsuccessful");
             }
         });
+
 
         //====================================INITATE BUTTONS====================================
         //UPDATE PEERS ON UI
@@ -238,11 +204,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             }
         });
 
-        //================CONNECT TO PEER================
+        //================CONNECT TO PEER================ ---NOT IN USE
         button2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                /*
                 if (validPeers==true){
                     config.wps.setup = WpsInfo.PBC;
                     config.groupOwnerIntent = 15;
@@ -259,6 +226,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                         }
                     });
                 }
+                */
 
 
             }
@@ -310,57 +278,62 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         button5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (previewState=="OFF"){
+                if(transferReadyState){
+                    if (previewState=="OFF"){
 
-                    minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
-                    Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
-                    minBufSize = fixedBufferParameter;
-                    Log.d("NEUTRAL","Audio Sample Rate is: " + sampleRate);
-                    Log.d("NEUTRAL","Audio File Format is: " + audioFormat);
-                    audioStatus = true;
-                    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
-                    Log.d("NEUTRAL", "Recorder initialized");
-                    startAudioStreaming();
-
-                    try{
-                        frame1.addView(mView);
-                        previewState="ON";
-                    }catch(RuntimeException e){
-                        Log.d("NEUTRAL","Main Activity: Error in starting preview");
-                        System.err.println(e);
-                        return;
-                    }
-                }
-                else if(previewState=="PAUSE"){
-                    try{
+                        minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
+                        Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
+                        minBufSize = fixedBufferParameter;
+                        Log.d("NEUTRAL","Audio Sample Rate is: " + sampleRate);
+                        Log.d("NEUTRAL","Audio File Format is: " + audioFormat);
                         audioStatus = true;
                         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                         Log.d("NEUTRAL", "Recorder initialized");
+                        startService();
                         startAudioStreaming();
 
-
-                        //openCamera();
-                        //mPreview.setRes(selectedRes);
-                        //mPreview.resumePreview(mainCamera);
-                        //frame1.addView(mPreview);
-                        previewState="ON";
-                        text1.setText("Preview Resumed");
-                        activeTransfer=false;
-                    }catch(RuntimeException e){
-                        Log.d("NEUTRAL","Main Activity: Error in resuming preview");
-                        System.err.println(e);
-                        return;
+                        try{
+                            frame1.addView(mView);
+                            ViewGroup.LayoutParams layoutParams=mView.getLayoutParams();
+                            layoutParams.width=fixedWidth;
+                            layoutParams.height=fixedHeight;
+                            mView.setLayoutParams(layoutParams);
+                            previewState="ON";
+                        }catch(RuntimeException e){
+                            Log.d("NEUTRAL","Main Activity: Error in starting preview");
+                            System.err.println(e);
+                            return;
+                        }
                     }
+                    else if(previewState=="PAUSE"){
+                        try{
+                            audioStatus = true;
+                            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
+                            Log.d("NEUTRAL", "Recorder initialized");
+                            startAudioStreaming();
+                            previewState="ON";
+                            text1.setText("Preview Resumed");
+                            activeTransfer=false;
+                        }catch(RuntimeException e){
+                            Log.d("NEUTRAL","Main Activity: Error in resuming preview");
+                            System.err.println(e);
+                            return;
+                        }
+                    }
+                }else{
+                    Log.d("NEUTRAL","Cannot start preview, connection not ready");
                 }
             }
         });
     }
 
+    /*
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         spinner.setSelection(position);
         selectedRes = resSize.get(position);
         Log.d("NEUTRAL","Res Size Selected, Width: " + selectedRes.width + " , Height: " + selectedRes.height);
     }
+
 
     @Override
     public void onNothingSelected(AdapterView<?> arg0) {
@@ -380,6 +353,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             Log.d("NEUTRAL","Error in getting Res Size: " + e.getMessage());
         }
     }
+    */
 
     @Override
     protected void onResume(){
@@ -391,6 +365,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     protected void onPause(){
         super.onPause();
         unregisterReceiver(mReceiver);
+        this.stopService(clientServiceIntent);
         //releaseCamera();
     }
 
@@ -416,12 +391,34 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         transferReadyState=status;
     }
 
-    public void sendData(){
+    public void startService(){
+        clientServiceIntent = new Intent(this, ClientService.class);
+        clientServiceIntent.putExtra("port",new Integer(port));
+        clientServiceIntent.putExtra("wifiInfo",wifiP2pInfo);
+        clientServiceIntent.putExtra("clientResult", new ResultReceiver(null){
+            @Override
+            protected void onReceiveResult(int resultCode, final Bundle resultData){
+                if(resultCode == port){
+                    if(resultData==null){
+                        activeTransfer=false;
+                        mView.updateStatus(activeTransfer);
+                    }else{
+                        final TextView client_status_text= (TextView) findViewById(R.id.textView2);
+                        client_status_text.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                client_status_text.setText((String)resultData.get("message"));
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
 
+    public void sendData(){
         //Log.d("NEUTRAL","Send Data Called");
         if(activeTransfer==false){
-
-            //activeTransfer = true;
             if(!transferReadyState){
                 Log.d("NEUTRAL","Error - Connection not ready");
                 text1.setText("Error - Connection not ready");
@@ -432,32 +429,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             else
             {
                 //Launch Client Service
-                //Log.d("NEUTRAL","Data Sent");
+                activeTransfer=true;
+                mView.updateStatus(activeTransfer);
                 count = count + 1;
                 Log.d("NEUTRAL","Frame: " + count);
-                clientServiceIntent = new Intent(this, ClientService.class);
-                clientServiceIntent.putExtra("port",new Integer(port));
-                clientServiceIntent.putExtra("wifiInfo",wifiP2pInfo);
                 clientServiceIntent.putExtra("pictureData",pictureData);
                 clientServiceIntent.putExtra("audioData", audioData);
-                clientServiceIntent.putExtra("clientResult", new ResultReceiver(null){
-                    @Override
-                    protected void onReceiveResult(int resultCode, final Bundle resultData){
-                        if(resultCode == port){
-                            if(resultData==null){
-                                activeTransfer=false;
-                            }else{
-                                final TextView client_status_text= (TextView) findViewById(R.id.textView2);
-                                client_status_text.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        client_status_text.setText((String)resultData.get("message"));
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
                 this.startService(clientServiceIntent);
             }
         }else
@@ -466,24 +443,6 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         }
 
     }
-
-    /*
-    public void openCamera(){
-        try{
-            mainCamera= Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
-        }catch(Exception e){
-            Log.d("NEUTRAL","Error opening camera: " + e.getMessage());
-        }
-    }
-
-
-    public void releaseCamera(){
-        if(mainCamera!=null){
-            mainCamera.release();
-            mainCamera=null;
-        }
-    }
-    */
 
     public void startAudioStreaming(){
         final Thread streamThread = new Thread(new Runnable() {
@@ -508,12 +467,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         });
         streamThread.start();
     }
-
 }
 
 // View
 class MainView extends GLSurfaceView {
     MainRenderer mRenderer;
+    Boolean processingStatus = false;
 
     private Handler mainViewHandler = null;
 
@@ -555,7 +514,13 @@ class MainView extends GLSurfaceView {
     }
 
     public void surfaceChanged (SurfaceHolder holder, int format, int w, int h ) {
+        Log.d("NEUTRAL","GLSurfaceview Surface Changed method called, variables received, w: " + w + " h: " + h);
         super.surfaceChanged ( holder, format, w, h );
+    }
+
+    public void updateStatus(boolean processing){
+        processingStatus = processing;
+        mRenderer.updateStatus(processing);
     }
 }
 
@@ -591,12 +556,17 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
     private boolean mUpdateST = false;
 
     private MainView mView;
+    private Boolean processingStatus = false;
 
     //Stuff to send picture
-    int w = 320;
-    int h = 240;
-    int bitmapBuffer[] = new int[w * h];
-    int bitmapSource[] = new int[w * h];
+    //int w = 320;
+    //int h = 240;
+    int passedw = 320;
+    int passedh = 240;
+    int frameHeight;
+    int frameWidth;
+    int bitmapBuffer[] = new int[passedw * passedh];
+    int bitmapSource[] = new int[passedw * passedh];
     byte[] b;
 
     private Bitmap bmpout;
@@ -610,8 +580,9 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
 
 
     MainRenderer (MainView view, int mainw, int mainh) {
-        w = mainw;
-        h = mainh;
+        Log.d("NEUTRAL", "Main Renderer Initialised with: " + mainw + "x" + mainh);
+        passedw = mainw;
+        passedh = mainh;
         mView = view;
         float[] vtmp = { 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f };
         float[] ttmp = { 1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f };
@@ -645,16 +616,19 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
         } catch ( IOException ioe ) {
         }
 
-        GLES20.glClearColor ( 1.0f, 1.0f, 0.0f, 1.0f );
-
         hProgram = loadShader ( vss, fss );
     }
 
     public void onDrawFrame ( GL10 unused ) {
 
         //Send picture stuff
-        createBitmap();
-        sendMessage();
+        if (processingStatus==false) {
+            createBitmap();
+            sendMessage();
+            Log.d("Neutral","Sending frame");
+        }else{
+            Log.d("Neutral","Skipped frame");
+        }
 
         GLES20.glClear( GLES20.GL_COLOR_BUFFER_BIT );
 
@@ -686,10 +660,15 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
 
     public void onSurfaceChanged (GL10 unused, int width, int height ) {
         Log.d("NEUTRAL", "glSurfaceChanged Arguements, Width = " + width + " Height = " + height);
-        Log.d("NEUTRAL", "Specified dimensions: " + w + " by " + h);
-        GLES20.glViewport( 0, 0, w, h );
+        frameWidth = width;
+        frameHeight = height;
+        Log.d("NEUTRAL", "Specified dimensions: " + passedw + " by " + passedh);
+        GLES20.glViewport( 0, 0, passedw, passedh );
+        //GLES20.glViewport( 0, 0, 176, 144);
         Camera.Parameters param = mCamera.getParameters();
-        param.setPreviewSize(w, h);
+        param.setPreviewSize(passedw, passedh);
+        //param.setPreviewSize(176, 144);
+        param.setPreviewFpsRange(9000,15000);
         param.set("orientation", "landscape");
         mCamera.setParameters ( param );
         mCamera.startPreview();
@@ -712,7 +691,6 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
     public synchronized void onFrameAvailable ( SurfaceTexture st ) {
         mUpdateST = true;
         mView.requestRender();
-
     }
 
     private static int loadShader ( String vss, String fss ) {
@@ -750,14 +728,12 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
     private void createBitmap() {
         //Extract Byte[]
         try {
-            w=176;
-            h=144;
-            ByteBuffer buf = ByteBuffer.allocateDirect(w * h * 4);
-            GLES20.glReadPixels(0, 0, w, h, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buf);
+            ByteBuffer buf = ByteBuffer.allocateDirect(passedw * passedh * 4);
+            GLES20.glReadPixels(0, 0, passedw, passedh, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, buf);
             //buf.rewind();
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             Bitmap bmpout;
-            bmpout = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            bmpout = Bitmap.createBitmap(passedw, passedh, Bitmap.Config.ARGB_8888);
             bmpout.copyPixelsFromBuffer(buf);
             bmpout.compress(Bitmap.CompressFormat.JPEG, 90, stream);
             b = stream.toByteArray();
@@ -776,6 +752,10 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
         msg.setData(bundle);
         mainRendererHandler.sendMessage(msg);
 
+    }
+
+    public void updateStatus(Boolean status){
+        processingStatus = status;
     }
 
 }
