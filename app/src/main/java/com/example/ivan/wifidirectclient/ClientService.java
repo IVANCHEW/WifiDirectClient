@@ -31,12 +31,12 @@ public class ClientService extends IntentService {
     private ResultReceiver clientResult;
     private WifiP2pDevice targetDevice;
     private WifiP2pInfo wifiP2pInfo;
-    private byte[] pictureData, audioData;
+    private byte[] audioData;
 
     public ClientService(){
         super("ClientService");
+
         serviceEnabled=true;
-        //Log.d("NEUTRAL","Client Service Class: Called");
     }
 
     @Override
@@ -45,7 +45,6 @@ public class ClientService extends IntentService {
         port = ((Integer) intent.getExtras().get("port")).intValue();
         clientResult = (ResultReceiver) intent.getExtras().get("clientResult");
         wifiP2pInfo = (WifiP2pInfo) intent.getExtras().get("wifiInfo");
-        pictureData =(byte[])intent.getExtras().get("pictureData");
         audioData = (byte[])intent.getExtras().get("audioData");
 
         if(!wifiP2pInfo.isGroupOwner){
@@ -53,32 +52,17 @@ public class ClientService extends IntentService {
             InetAddress targetIP = wifiP2pInfo.groupOwnerAddress;
             Socket clientSocket=null;
             OutputStream os=null;
-            byte[] transfer = null;
+            byte[] transfer = new byte[audioData.length];
+            System.arraycopy(audioData,0 , transfer, 0, audioData.length);
 
-
-            try{
-
-                transfer = new byte[audioData.length + pictureData.length];
-                System.arraycopy(audioData,0 , transfer, 0, audioData.length);
-                System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
-                //Log.d("NEUTRAL", "Length of picture array: " + pictureData.length);
-                //Log.d("NEUTRAL", "Length of audio array: " + audioData.length);
-
-            }catch (Exception e){
-                Log.d("NEUTRAL","Client Service Error, data compilation problem: " + e.getMessage());
-            }
-
+            //Log.d("NEUTRAL", "Length of picture array: " + pictureData.length);
+            //Log.d("NEUTRAL", "Length of audio array: " + audioData.length);
 
             try{
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
 
                 os.write(transfer,0 ,transfer.length);
-                //os.write(pictureData, 0, pictureData.length);
-
-                //Log.d("NEUTRAL","Data Length: " + transfer.length);
-                //os.write(audioData,0,audioData.length);
-                //os.write(pictureData,0,pictureData.length);
 
                 clientResult.send(port,null);
                 os.flush();
@@ -110,31 +94,6 @@ public class ClientService extends IntentService {
         stopSelf();
     }
 
-    public static byte[][] divideArray(byte[] source, int chunksize) {
-
-        byte[][] ret = new byte[(int)Math.ceil(source.length / (double)chunksize)][chunksize];
-
-        int start = 0;
-
-        for(int i = 0; i < ret.length; i++) {
-            ret[i] = Arrays.copyOfRange(source,start, start + chunksize);
-            start += chunksize ;
-        }
-
-        return ret;
-    }
-
-    public static byte[] combineArray(byte[] A, byte[] B){
-
-        byte[] C = new byte[A.length+B.length];
-
-        for (int i = 0; i < (A.length+B.length); ++i)
-        {
-            C[i] = i < A.length ? A[i] : B[i - A.length];
-        }
-
-        return C;
-    }
 
 }
 
