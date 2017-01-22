@@ -46,7 +46,7 @@ public class ClientService extends IntentService {
         clientResult = (ResultReceiver) intent.getExtras().get("clientResult");
         wifiP2pInfo = (WifiP2pInfo) intent.getExtras().get("wifiInfo");
         pictureData =(byte[])intent.getExtras().get("pictureData");
-        audioData = (byte[])intent.getExtras().get("audioData");
+        //audioData = (byte[])intent.getExtras().get("audioData");
 
         if(!wifiP2pInfo.isGroupOwner){
             //Log.d("NEUTRAL","Begin sending data");
@@ -57,16 +57,17 @@ public class ClientService extends IntentService {
 
             //Log.d("NEUTRAL", "Client: Preparing Data");
 
-            transfer = new byte[audioData.length + pictureData.length];
-            System.arraycopy(audioData,0 , transfer, 0, audioData.length);
-            System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
+            //transfer = new byte[audioData.length + pictureData.length];
+            //System.arraycopy(audioData,0 , transfer, 0, audioData.length);
+            //System.arraycopy(pictureData,0 , transfer, audioData.length, pictureData.length);
 
             //Log.d("NEUTRAL", "Client: Preparing to send");
 
             try{
                 clientSocket = new Socket(targetIP,port);
                 os = clientSocket.getOutputStream();
-                os.write(transfer,0 ,transfer.length);
+                //os.write(transfer,0 ,transfer.length);
+                os.write(pictureData,0,pictureData.length);
                 os.flush();
                 //Log.d("NEUTRAL","Send Complete");
                 os.close();

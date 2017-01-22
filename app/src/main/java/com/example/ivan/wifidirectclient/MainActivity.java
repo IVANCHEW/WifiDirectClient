@@ -107,7 +107,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private boolean audioStatus = true;
     //private AudioTrack speaker;
-    int minBufSize;
+    int minBufSize, readBufSize;
 
     //OPEN GL STUFF
     private MainView mView;
@@ -283,14 +283,17 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
 
                         minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
                         Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
-                        minBufSize = fixedBufferParameter;
+                        //minBufSize = fixedBufferParameter;
+                        readBufSize = minBufSize - 100;
+                        Log.d("NEUTRAL","Read Buffer Size is:" + readBufSize);
                         Log.d("NEUTRAL","Audio Sample Rate is: " + sampleRate);
                         Log.d("NEUTRAL","Audio File Format is: " + audioFormat);
                         audioStatus = true;
                         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                         Log.d("NEUTRAL", "Recorder initialized");
                         startService();
-                        startAudioStreaming();
+                        //startAudioStreaming();
+                        recorder.startRecording();
 
                         try{
                             frame1.addView(mView);
@@ -310,7 +313,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                             audioStatus = true;
                             recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                             Log.d("NEUTRAL", "Recorder initialized");
-                            startAudioStreaming();
+                            //startAudioStreaming();
                             previewState="ON";
                             text1.setText("Preview Resumed");
                             activeTransfer=false;
@@ -433,8 +436,9 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 mView.updateStatus(activeTransfer);
                 count = count + 1;
                 Log.d("NEUTRAL","Frame: " + count);
+                //readAudioData();
                 clientServiceIntent.putExtra("pictureData",pictureData);
-                clientServiceIntent.putExtra("audioData", audioData);
+                //clientServiceIntent.putExtra("audioData", audioData);
                 this.startService(clientServiceIntent);
             }
         }else
@@ -466,6 +470,12 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
             }
         });
         streamThread.start();
+    }
+
+    public void readAudioData(){
+        byte[] buffer = new byte[readBufSize];
+        recorder.read(buffer, 0, buffer.length);
+        audioData = buffer;
     }
 }
 
