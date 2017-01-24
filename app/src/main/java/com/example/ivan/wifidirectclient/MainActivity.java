@@ -96,8 +96,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     //AUDIO DECLARATIONS
     AudioRecord recorder;
     private int sampleRate = 8000;
-    //int fixedBufferParameter = 1408;
-    int fixedBufferParameter = 1500;
+    int fixedBufferParameter = 2400;
     //int fixedWidth = 640;
     //int fixedHeight = 480;
     int fixedWidth = 320;
@@ -106,6 +105,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
     private int channelConfig = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     private int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
     private boolean audioStatus = true;
+    private boolean audioReady = false;
     //private AudioTrack speaker;
     int minBufSize;
 
@@ -282,14 +282,16 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                     if (previewState=="OFF"){
 
                         minBufSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat);
-                        Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
                         minBufSize = fixedBufferParameter;
+                        Log.d("NEUTRAL","Min Buffer Size is:" + minBufSize);
+
                         Log.d("NEUTRAL","Audio Sample Rate is: " + sampleRate);
                         Log.d("NEUTRAL","Audio File Format is: " + audioFormat);
                         audioStatus = true;
                         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                         Log.d("NEUTRAL", "Recorder initialized");
                         startService();
+                        //recorder.startRecording();
                         startAudioStreaming();
 
                         try{
@@ -310,7 +312,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                             audioStatus = true;
                             recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,sampleRate,channelConfig,audioFormat,minBufSize);
                             Log.d("NEUTRAL", "Recorder initialized");
-                            startAudioStreaming();
+                            //startAudioStreaming();
                             previewState="ON";
                             text1.setText("Preview Resumed");
                             activeTransfer=false;
@@ -426,16 +428,21 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                 Log.d("NEUTRAL","Error - Missing Wifi P2P Information");
                 text1.setText("Error - Missing Wifi P2P Information");
             }
-            else
+            else if (audioReady)
             {
                 //Launch Client Service
                 activeTransfer=true;
                 mView.updateStatus(activeTransfer);
                 count = count + 1;
                 Log.d("NEUTRAL","Frame: " + count);
+                //getAudioData();
                 clientServiceIntent.putExtra("pictureData",pictureData);
                 clientServiceIntent.putExtra("audioData", audioData);
                 this.startService(clientServiceIntent);
+                audioReady=false;
+            }
+            else{
+                Log.d("NEUTRAL","Audio not ready");
             }
         }else
         {
@@ -457,7 +464,10 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
                         //reading data from MIC into buffer
                         recorder.read(buffer, 0, buffer.length);
                         //Log.d("NEUTRAL","Finished Reading Recorder Data");
-                        audioData = buffer;
+                        if (!audioReady) {
+                            audioData = buffer;
+                            audioReady = true;
+                        }
                     }
 
                 } catch (Exception e) {
@@ -467,6 +477,7 @@ public class MainActivity extends Activity implements WifiP2pManager.PeerListLis
         });
         streamThread.start();
     }
+
 }
 
 // View
@@ -668,7 +679,7 @@ class MainRenderer implements GLSurfaceView.Renderer, SurfaceTexture.OnFrameAvai
         Camera.Parameters param = mCamera.getParameters();
         param.setPreviewSize(passedw, passedh);
         //param.setPreviewSize(176, 144);
-        param.setPreviewFpsRange(9000,15000);
+        param.setPreviewFpsRange(12000,15000);
         param.set("orientation", "landscape");
         mCamera.setParameters ( param );
         mCamera.startPreview();
